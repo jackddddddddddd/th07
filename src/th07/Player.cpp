@@ -1778,8 +1778,7 @@ i32 Player::UpdateDeath()
             {
                 if (g_GameManager.GetPower() <= 16)
                 {
-                    g_GameManager.globals->currentPower = 0.0f;
-                    g_GameManager.RegenerateGameIntegrityCsum();
+                    g_GameManager.SetPower(0.0f);
                 }
                 else
                 {
@@ -1813,8 +1812,7 @@ i32 Player::UpdateDeath()
             }
             else
             {
-                g_GameManager.globals->currentPower = 0.0f;
-                g_GameManager.RegenerateGameIntegrityCsum();
+                g_GameManager.SetPower(0.0f);
                 g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
                 g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);
                 g_ItemManager.SpawnItem(&this->pos, ITEM_FULL_POWER, ITEM_STATE_MOVE_RANDOM);

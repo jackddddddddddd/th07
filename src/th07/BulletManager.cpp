@@ -353,98 +353,96 @@ void Bullet::RunCommands()
 {
     BulletCommand *cmd;
 
-    for (;;)
+next:
+    if (this->curCmdIdx >= ARRAY_SIZE_SIGNED(this->commands))
     {
-        if (this->curCmdIdx >= ARRAY_SIZE_SIGNED(this->commands))
-        {
-            return;
-        }
-
-        cmd = &this->commands[this->curCmdIdx];
-        if (cmd->type == 0)
-        {
-            return;
-        }
-        if (cmd->flag == 0 && this->exFlags != 0)
-        {
-            return;
-        }
-        if (((u32)this->moreFlags & cmd->type) == 0)
-        {
-            this->curCmdIdx++;
-            continue;
-        }
-
-        switch (cmd->type)
-        {
-        case 1:
-            this->exFlags |= 1;
-            this->commandStates[0].timer = 0;
-            this->commandStates[0].vec3.z = 0.0f;
-            break;
-        case 0x10:
-            this->exFlags |= 0x10;
-            this->commandStates[1].speed = cmd->speed;
-            this->commandStates[1].angle = cmd->angle > -990.0f
-                                               ? cmd->angle
-                                               : this->angle;
-            this->commandStates[1].timer = 0;
-            this->commandStates[1].duration = cmd->duration;
-            this->commandStates[1].vec3.FromAngleMagnitude(this->commandStates[1].angle,
-                                                           g_Supervisor.effectiveFramerateMultiplier *
-                                                               this->commandStates[1].speed);
-            if (this->curCmdIdx != 0 && this->soundIdx >= 0)
-            {
-                g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
-            }
-            break;
-        case 0x20:
-            this->exFlags |= 0x20;
-            this->commandStates[2].speed = cmd->speed;
-            this->commandStates[2].angle = cmd->angle;
-            this->commandStates[2].timer = 0;
-            this->commandStates[2].duration = cmd->duration;
-            if (this->curCmdIdx != 0 && this->soundIdx >= 0)
-            {
-                g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
-            }
-            break;
-        case 0x40:
-        case 0x80:
-        case 0x100:
-            this->exFlags |= cmd->type;
-            // ZUN quirk: Using the BulletCommand's speed for BulletCommandState's angle?
-            this->commandStates[3].angle = cmd->speed;
-            this->commandStates[3].speed = cmd->angle > -999.0f
-                                               ? cmd->angle
-                                               : this->speed;
-            this->commandStates[3].timer = 0;
-            this->commandStates[3].duration = cmd->duration;
-            this->commandStates[3].maxTimes = cmd->loopCount;
-            this->commandStates[3].minTimes = 0;
-            break;
-        case 0x400:
-        case 0x800:
-            this->exFlags |= cmd->type;
-            if (cmd->speed >= 0.0f)
-            {
-                this->commandStates[4].speed = cmd->speed;
-            }
-            else
-            {
-                this->commandStates[4].speed = this->speed;
-            }
-            this->commandStates[4].maxTimes = cmd->duration;
-            this->commandStates[4].duration = 0;
-            break;
-        case 0x2000:
-            this->spawnDelay = cmd->duration;
-            this->curCmdIdx++;
-            continue;
-        }
-        this->curCmdIdx++;
         return;
     }
+
+    cmd = &this->commands[this->curCmdIdx];
+    if (cmd->type == 0)
+    {
+        return;
+    }
+    if (cmd->flag == 0 && this->exFlags != 0)
+    {
+        return;
+    }
+    if (((u32)this->moreFlags & cmd->type) == 0)
+    {
+        this->curCmdIdx++;
+        goto next;
+    }
+
+    switch (cmd->type)
+    {
+    case 1:
+        this->exFlags |= 1;
+        this->commandStates[0].timer = 0;
+        this->commandStates[0].vec3.z = 0.0f;
+        break;
+    case 0x10:
+        this->exFlags |= 0x10;
+        this->commandStates[1].speed = cmd->speed;
+        this->commandStates[1].angle = cmd->angle > -990.0f
+                                           ? cmd->angle
+                                           : this->angle;
+        this->commandStates[1].timer = 0;
+        this->commandStates[1].duration = cmd->duration;
+        this->commandStates[1].vec3.FromAngleMagnitude(this->commandStates[1].angle,
+                                                       g_Supervisor.effectiveFramerateMultiplier *
+                                                           this->commandStates[1].speed);
+        if (this->curCmdIdx != 0 && this->soundIdx >= 0)
+        {
+            g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
+        }
+        break;
+    case 0x20:
+        this->exFlags |= 0x20;
+        this->commandStates[2].speed = cmd->speed;
+        this->commandStates[2].angle = cmd->angle;
+        this->commandStates[2].timer = 0;
+        this->commandStates[2].duration = cmd->duration;
+        if (this->curCmdIdx != 0 && this->soundIdx >= 0)
+        {
+            g_SoundPlayer.PlaySoundByIdx(this->soundIdx, 0);
+        }
+        break;
+    case 0x40:
+    case 0x80:
+    case 0x100:
+        this->exFlags |= cmd->type;
+        // ZUN quirk: Using the BulletCommand's speed for BulletCommandState's angle?
+        this->commandStates[3].angle = cmd->speed;
+        this->commandStates[3].speed = cmd->angle > -999.0f
+                                           ? cmd->angle
+                                           : this->speed;
+        this->commandStates[3].timer = 0;
+        this->commandStates[3].duration = cmd->duration;
+        this->commandStates[3].maxTimes = cmd->loopCount;
+        this->commandStates[3].minTimes = 0;
+        break;
+    case 0x400:
+    case 0x800:
+        this->exFlags |= cmd->type;
+        if (cmd->speed >= 0.0f)
+        {
+            this->commandStates[4].speed = cmd->speed;
+        }
+        else
+        {
+            this->commandStates[4].speed = this->speed;
+        }
+        this->commandStates[4].maxTimes = cmd->duration;
+        this->commandStates[4].duration = 0;
+        break;
+    case 0x2000:
+        this->spawnDelay = cmd->duration;
+        this->curCmdIdx++;
+        goto next;
+    }
+
+    this->curCmdIdx++;
 }
 
 #pragma var_order(itemPos, i, sine, bullet, laser, cosine, offset)

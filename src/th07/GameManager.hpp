@@ -82,6 +82,30 @@ struct GameManager
         return this->globals->currentPower;
     }
 
+    void SetPower(i32 amount)
+    {
+        this->globals->currentPower = amount;
+        RegenerateGameIntegrityCsum();
+    }
+
+    void SetLives(i32 amount)
+    {
+        this->globals->livesRemaining = amount;
+        RegenerateGameIntegrityCsum();
+    }
+
+    void SetDeaths(i32 amount)
+    {
+        this->globals->deaths = amount;
+        RegenerateGameIntegrityCsum();
+    }
+
+    void SetBombsUsed(i32 amount)
+    {
+        this->globals->bombsUsed = amount;
+        RegenerateGameIntegrityCsum();
+    }
+
     // FUNCTION: TH07 0x0043b750
     void CheckGameIntegrityOnDeath(i32 amount)
     {
@@ -149,16 +173,6 @@ struct GameManager
     ZunBool IsCherryAtMax()
     {
         return this->cherry >= this->cherryMax;
-    }
-
-    void SetCurrentPower(i32 amount)
-    {
-        this->globals->currentPower = (f32)amount;
-    }
-
-    void SetLivesRemaining(i32 amount)
-    {
-        this->globals->livesRemaining = (f32)amount;
     }
 
     // FUNCTION: TH07 0x0042d657

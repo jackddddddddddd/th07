@@ -839,7 +839,7 @@ i32 RetryMenu::OnUpdate()
         return 1;
     }
     if ((i32)(u32)g_GameManager.globals->numRetries >= g_GameManager.maxRetries ||
-        g_GameManager.difficulty >= 4)
+        g_GameManager.difficulty >= DIFF_EXTRA)
     {
         g_GameManager.isInRetryMenu = 0;
         g_Supervisor.curState = SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME;
@@ -970,15 +970,13 @@ i32 RetryMenu::OnUpdate()
             g_GameManager.globals->guiScore = (u32)g_GameManager.globals->numRetries;
             g_GameManager.globals->guiScoreDifference = 0;
             g_GameManager.globals->score = g_GameManager.globals->guiScore;
-            g_GameManager.SetLivesRemaining(g_GameManager.defaultCfg->lifeCount);
-            g_GameManager.RegenerateGameIntegrityCsum();
+            g_GameManager.SetLives(g_GameManager.defaultCfg->lifeCount);
             g_GameManager.SetBombsRemainingAndComputeCsum(
                 g_Player.shooterData->initialBombs);
             g_GameManager.globals->grazeInStage = 0;
             g_GameManager.globals->pointItemsCollectedThisStage = 0;
             g_GameManager.globals->pointItemsCollectedForExtend = 0;
-            g_GameManager.globals->currentPower = 0.0f;
-            g_GameManager.RegenerateGameIntegrityCsum();
+            g_GameManager.SetPower(0.0f);
             g_GameManager.globals->extendsFromPointItems = 0;
             g_GameManager.globals->nextNeededPointItemsForExtend = 50;
             g_GameManager.cherry = g_GameManager.globals->cherryStart;

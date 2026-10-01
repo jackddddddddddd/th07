@@ -271,7 +271,7 @@ u32 Supervisor::OnUpdate(Supervisor *arg)
                 break;
             case SUPERVISOR_STATE_RESTART_FROM_BEGINNING:
                 GameManager::CutChain();
-                if (!g_GameManager.practice && g_GameManager.difficulty < 4)
+                if (!g_GameManager.practice && g_GameManager.difficulty < DIFF_EXTRA)
                 {
                     g_GameManager.currentStage = DUMMYSTAGE;
                 }
@@ -777,8 +777,17 @@ ZunResult Supervisor::DeletedCallback(Supervisor *arg)
     }
     SAFE_RELEASE(arg->controller);
     SAFE_RELEASE(arg->directInput);
-    SAFE_DELETE(g_GameManager.globals);
-    SAFE_DELETE(g_GameManager.defaultCfg);
+
+    if (g_GameManager.globals)
+    {
+        ZUN_DELETE(g_GameManager.globals);
+    }
+
+    if (g_GameManager.defaultCfg)
+    {
+        ZUN_DELETE(g_GameManager.defaultCfg);
+    }
+
     g_Pbg4Archive.Release();
     if (g_Supervisor.midiTimer)
     {

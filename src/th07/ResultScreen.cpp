@@ -433,8 +433,8 @@ ZunResult ResultScreen::ParsePscr(ScoreDat *scoreDat, Pscr *outPscr)
         if (parsedPscr->magic == PSCR_MAGIC && parsedPscr->version == 1)
         {
             pscr = parsedPscr;
-            if (pscr->character >= 6 ||
-                (pscr->difficulty >= 5 || pscr->stage >= 7))
+            if (pscr->character >= SHOT_COUNT ||
+                (pscr->difficulty >= DIFF_PHANTASM || pscr->stage >= EXTRASTAGE))
             {
                 break;
             }
@@ -2087,17 +2087,17 @@ ZunResult ResultScreen::DrawFinalStats()
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",
                                     g_GameManager.globals->numRetries);
-        rankingProbably -= (f32)g_GameManager.globals->numRetries * 10.0f;
+        rankingProbably -= (i32)g_GameManager.globals->numRetries * 10.0f;
 
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",
                                     (i32)g_GameManager.globals->deaths);
-        rankingProbably -= (f32)g_GameManager.globals->deaths * 5.0f - 10.0f;
+        rankingProbably -= (i32)g_GameManager.globals->deaths * 5.0f - 10.0f;
 
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",
                                     (i32)g_GameManager.globals->bombsUsed);
-        rankingProbably -= (f32)g_GameManager.globals->bombsUsed * 2.0f - 10.0f;
+        rankingProbably -= (i32)g_GameManager.globals->bombsUsed * 2.0f - 10.0f;
 
         pos.y += 22.0f;
         AsciiManager::AddFormatText(&g_AsciiManager, &pos, "%9d",

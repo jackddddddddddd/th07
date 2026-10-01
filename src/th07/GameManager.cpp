@@ -82,13 +82,13 @@ i32 GameManager::CalcChecksum(u8 *address, i32 size)
 i32 GameManager::ComputeGameIntegrityCsum()
 {
     i32 csum = CalcChecksum((u8 *)g_GameManager.globals->rng1,
-                                   (i32) & this->globals->curCsum - (i32)this->globals->rng1);
+                            (i32) & this->globals->curCsum - (i32)this->globals->rng1);
     csum += CalcChecksum((u8 *)g_GameManager.globals->csumData,
-                                sizeof(g_GameManager.globals->csumData));
+                         sizeof(g_GameManager.globals->csumData));
     csum += CalcChecksum((u8 *)g_GameManager.defaultCfg,
-                                sizeof(GameConfiguration));
+                         sizeof(GameConfiguration));
     csum += CalcChecksum((u8 *)&g_Supervisor.cfg,
-                                sizeof(GameConfiguration));
+                         sizeof(GameConfiguration));
     return csum;
 }
 
@@ -497,8 +497,16 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
     if (g_Supervisor.curState != SUPERVISOR_STATE_NEXT_STAGE)
     {
         DrawLoadingSprite();
-        SAFE_DELETE(arg->defaultCfg);
-        SAFE_DELETE(arg->globals);
+
+        if (arg->defaultCfg)
+        {
+            ZUN_DELETE(arg->defaultCfg);
+        }
+
+        if (arg->globals)
+        {
+            ZUN_DELETE(arg->globals);
+        }
 
         size = g_Rng.GetRandomU32InRange(65535) + 16;
         arg->tmpBuffer = malloc(size);
@@ -510,7 +518,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         arg->powerItemCountForScore = 0;
         arg->cherry = arg->globals->cherryStart;
         arg->cherryPlus = arg->globals->cherryStart;
-        if (g_GameManager.difficulty >= 4)
+        if (g_GameManager.difficulty >= DIFF_EXTRA)
         {
             arg->defaultCfg->lifeCount = 2;
         }
@@ -525,14 +533,12 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         }
         if (!g_GameManager.replay)
         {
-            g_GameManager.SetLivesRemaining(arg->defaultCfg->lifeCount);
-            g_GameManager.RegenerateGameIntegrityCsum();
+            g_GameManager.SetLives(arg->defaultCfg->lifeCount);
             g_GameManager.SetBombsRemainingAndComputeCsum(
                 g_Player.shooterData->initialBombs);
         }
         arg->ResetRegionsPos();
-        arg->globals->currentPower = 0.0f;
-        arg->RegenerateGameIntegrityCsum();
+        arg->SetPower(0.0f);
         arg->totalPlayTime = 0;
         arg->globals->guiScore = 0;
         arg->globals->score = 0;
@@ -541,7 +547,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         arg->globals->numRetries = 0;
         arg->globals->grazeInTotal = 0;
         arg->globals->pointItemsCollectedForExtend = 0;
-        if (arg->difficulty < 4)
+        if (arg->difficulty < DIFF_EXTRA)
         {
             arg->globals->nextNeededPointItemsForExtend = 50;
         }
@@ -556,10 +562,8 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
             return ZUN_ERROR;
         }
         arg->InitializeRank();
-        arg->globals->deaths = 0.0f;
-        arg->RegenerateGameIntegrityCsum();
-        arg->globals->bombsUsed = 0.0f;
-        arg->RegenerateGameIntegrityCsum();
+        arg->SetDeaths(0);
+        arg->SetBombsUsed(0);
         arg->globals->spellCardsCaptured = 0;
         if (!g_GameManager.practice)
         {
@@ -714,8 +718,7 @@ ZunResult GameManager::AddedCallback(GameManager *arg)
         case STAGE1:
             break;
         default:
-            arg->globals->currentPower = 128.0f;
-            arg->RegenerateGameIntegrityCsum();
+            arg->SetPower(128.0f);
             break;
         }
     }

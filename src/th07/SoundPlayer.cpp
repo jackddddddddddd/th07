@@ -98,7 +98,10 @@ ZunResult SoundPlayer::InitializeDSound(HWND gameWindow)
     if (FAILED(this->manager->Initialize(gameWindow, 2, 2, 44100, 16)))
     {
         g_GameErrorContext.Log(TH_ERR_DSOUND_INIT_FAIL);
-        SAFE_DELETE(this->manager);
+        if (this->manager)
+        {
+            ZUN_DELETE(this->manager);
+        }
         return ZUN_ERROR;
     }
 
@@ -160,8 +163,14 @@ ZunResult SoundPlayer::Release()
     this->directSoundHdl = NULL;
     this->initSoundBuffer->Stop();
     SAFE_RELEASE(this->initSoundBuffer);
-    SAFE_DELETE(this->backgroundMusic);
-    SAFE_DELETE(this->manager);
+    if (this->backgroundMusic)
+    {
+        ZUN_DELETE(this->backgroundMusic);
+    }
+    if (this->manager)
+    {
+        ZUN_DELETE(this->manager);
+    }
     for (i = 0; i < ARRAY_SIZE_SIGNED(this->bgmPreloadData); i++)
     {
         SAFE_FREE(this->bgmPreloadData[i]);
@@ -543,7 +552,11 @@ void SoundPlayer::StopBGM()
             CloseHandle(this->backgroundMusicUpdateEvent);
             this->backgroundMusicThreadHandle = NULL;
         }
-        SAFE_DELETE(this->backgroundMusic);
+
+        if (this->backgroundMusic)
+        {
+            ZUN_DELETE(this->backgroundMusic);
+        }
     }
 }
 
@@ -804,7 +817,11 @@ loop:
             CloseHandle(this->backgroundMusicThreadHandle);
             CloseHandle(this->backgroundMusicUpdateEvent);
             this->backgroundMusicThreadHandle = NULL;
-            SAFE_DELETE(this->backgroundMusic);
+
+            if (this->backgroundMusic)
+            {
+                ZUN_DELETE(this->backgroundMusic);
+            }
         }
         else if (commandCursor->arg2 == 10)
         {

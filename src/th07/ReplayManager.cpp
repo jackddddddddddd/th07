@@ -390,11 +390,9 @@ ZunResult ReplayManager::AddedCallbackPlayback(ReplayManager *arg)
     g_GameManager.globals->pointItemsCollectedForExtend =
         replayData->pointItemsCollectedForExtend;
     g_GameManager.rank.rank = replayData->rank;
-    g_GameManager.SetLivesRemaining(replayData->livesRemaining);
-    g_GameManager.RegenerateGameIntegrityCsum();
+    g_GameManager.SetLives(replayData->livesRemaining);
     g_GameManager.SetBombsRemainingAndComputeCsum(replayData->bombsRemaining);
-    g_GameManager.SetCurrentPower(replayData->currentPower);
-    g_GameManager.RegenerateGameIntegrityCsum();
+    g_GameManager.SetPower(replayData->currentPower);
     g_GameManager.globals->grazeInTotal = replayData->grazeInTotal;
     arg->replayInputs = replayData->replayInputs;
     g_GameManager.powerItemCountForScore = replayData->powerItemCountForScore;
@@ -575,7 +573,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
         if (mgr->GetAction() == REPLAY_MANAGER_ACTION_RECORD)
         {
             if (!g_GameManager.practice &&
-                g_GameManager.difficulty < 4 &&
+                g_GameManager.difficulty < DIFF_EXTRA &&
                 memcmp(&g_Supervisor.cfg, &mgr->data->data.cfg, sizeof(g_Supervisor.cfg)) != 0)
             {
                 goto SKIP_WRITE;
@@ -743,7 +741,7 @@ void ReplayManager::SaveReplay2(const char *filename)
     {
         mgr = g_ReplayManager;
         if (!g_GameManager.practice &&
-            g_GameManager.difficulty < 4 &&
+            g_GameManager.difficulty < DIFF_EXTRA &&
             memcmp(&g_Supervisor.cfg, &mgr->data->data.cfg, sizeof(g_Supervisor.cfg)) != 0)
         {
             goto SKIP_WRITE;

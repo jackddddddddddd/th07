@@ -2303,7 +2303,7 @@ i32 MainMenu::DrawReplayMenu()
             }
             if (this->currentReplay->head.stageReplayData[i].data)
             {
-                if (i < 6 || this->currentReplay->data.difficulty <= 4)
+                if (i < 6 || this->currentReplay->data.difficulty <= DIFF_EXTRA)
                 {
                     // STRING: TH07 0x00495538
                     AsciiManager::AddFormatText(&g_AsciiManager, &vm->pos, "%s %9d0",
@@ -2319,7 +2319,7 @@ i32 MainMenu::DrawReplayMenu()
             }
             else
             {
-                if (i < 6 || this->currentReplay->data.difficulty <= 4)
+                if (i < 6 || this->currentReplay->data.difficulty <= DIFF_EXTRA)
                 {
                     // STRING: TH07 0x00495528
                     AsciiManager::AddFormatText(&g_AsciiManager, &vm->pos,
@@ -2524,9 +2524,18 @@ ZunResult MainMenu::ActualAddedCallback()
     i32 frameCount;
     ScoreDat *scoreDat;
 
-    SAFE_DELETE(g_GameManager.defaultCfg);
+    if (g_GameManager.defaultCfg)
+    {
+        ZUN_DELETE(g_GameManager.defaultCfg);
+    }
+
     g_GameManager.defaultCfg = ZUN_NEW(GameConfiguration, "");
-    SAFE_DELETE(g_GameManager.globals);
+
+    if (g_GameManager.globals)
+    {
+        ZUN_DELETE(g_GameManager.globals);
+    }
+
     g_GameManager.globals = ZUN_NEW(ZunGlobals, "");
     g_Supervisor.effectiveFramerateMultiplier = 1.0f;
     if (g_GameManager.replay)
@@ -2619,7 +2628,7 @@ ZunResult MainMenu::ActualAddedCallback()
     case SUPERVISOR_STATE_GAMEMANAGER:
     case SUPERVISOR_STATE_NEXT_STAGE:
     case SUPERVISOR_STATE_RESULTSCREEN_FROM_GAME:
-        this->cursor = g_GameManager.difficulty >= 4;
+        this->cursor = g_GameManager.difficulty >= DIFF_EXTRA;
         break;
     case SUPERVISOR_STATE_RESULTSCREEN:
         this->cursor = MENU_CURSOR_PREINPUT_RESULTS;

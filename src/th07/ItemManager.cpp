@@ -222,8 +222,7 @@ void ItemManager::OnUpdate()
                     g_GameManager.AddCurrentPower(1);
                     if (g_GameManager.GetPower() >= 128)
                     {
-                        g_GameManager.globals->currentPower = 128.0f;
-                        g_GameManager.RegenerateGameIntegrityCsum();
+                        g_GameManager.SetPower(128.0f);
                         if (!g_EnemyManager.spellcardInfo.isActive)
                         {
                             g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
@@ -286,7 +285,7 @@ void ItemManager::OnUpdate()
                 {
                     for (;;)
                     {
-                        if (g_GameManager.difficulty < 4)
+                        if (g_GameManager.difficulty < DIFF_EXTRA)
                         {
                             if (g_GameManager.globals->extendsFromPointItems < 3)
                             {
@@ -340,8 +339,7 @@ void ItemManager::OnUpdate()
                     g_GameManager.AddCurrentPower(8);
                     if (g_GameManager.GetPower() >= 128)
                     {
-                        g_GameManager.globals->currentPower = 128.0f;
-                        g_GameManager.RegenerateGameIntegrityCsum();
+                        g_GameManager.SetPower(128.0f);
                         if (!g_EnemyManager.spellcardInfo.isActive)
                         {
                             g_BulletManager.RemoveAllBullets(ITEM_STATE_AUTOCOLLECT);
@@ -386,8 +384,7 @@ void ItemManager::OnUpdate()
                     g_AsciiManager.CreatePopup1(&item->pos, -1, 0xffffc0a0);
                     this->DespawnAllItems(i);
                 }
-                g_GameManager.globals->currentPower = 128.0f;
-                g_GameManager.RegenerateGameIntegrityCsum();
+                g_GameManager.SetPower(128.0f);
                 g_GameManager.AddScore(1000);
                 g_AsciiManager.CreatePopup1(&item->pos, 1000, 0xffffffff);
                 g_Gui.powerDisplayUpdateFrames = 2;

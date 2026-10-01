@@ -343,8 +343,7 @@ void EnemyManager::RunEclTimeline(EclTimeline *timeline)
                     ->runInterrupt = timeline->timelineInstr->args.args[1].i;
                 break;
             case 11:
-                g_GameManager.SetCurrentPower(timeline->timelineInstr->arg0);
-                g_GameManager.RegenerateGameIntegrityCsum();
+                g_GameManager.SetPower(timeline->timelineInstr->arg0);
                 break;
             case 12:
                 if (g_EnemyManager.bosses[timeline->timelineInstr->arg0] &&

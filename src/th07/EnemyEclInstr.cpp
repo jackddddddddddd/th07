@@ -109,7 +109,7 @@ void EnemyEclInstr::ExInsAliceCurveBullets(Enemy *enemy, EclRawInstr *instr)
             }
             bullet->speed = 0.3f;
             memset(bullet->commands, 0, sizeof(bullet->commands));
-            if (g_GameManager.difficulty < 3)
+            if (g_GameManager.difficulty < DIFF_LUNATIC)
             {
                 bullet->AddAngleAccelCommand(0, 0, 60, angle, 1.0f / 60.0f);
             }
@@ -265,7 +265,7 @@ void EnemyEclInstr::ExInsSplitBulletsOrShootBackwards(Enemy *enemy,
             bulletProps.angle1 = AddNormalizeAngle(bullet->angle, ZUN_PI);
             bulletProps.angle2 = ZUN_PI / 6.0f;
             bulletProps.speed1 = bullet->speed * 1.1f;
-            if (g_GameManager.difficulty < 3)
+            if (g_GameManager.difficulty < DIFF_LUNATIC)
             {
                 bulletProps.count1 = 4;
             }
@@ -502,7 +502,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
                     IsPointInRotatedRect(&bullet->pos, &center, &size,
                                          &laser->pos, sine, cosine))
                 {
-                    if (g_GameManager.difficulty < 2)
+                    if (g_GameManager.difficulty < DIFF_HARD)
                     {
                         bullet->speed *=
                             g_Rng.GetRandomFloatInRange(0.3f) + 0.7f;
@@ -531,7 +531,7 @@ void EnemyEclInstr::ExInsShootBulletsAlongLaser(Enemy *enemy,
                             bullet->spriteOffset);
                     bullet->angle = atan2f(bullet->velocity.y, bullet->velocity.x);
                     bullet->velocity.FromAngleMagnitude(bullet->angle, bullet->speed);
-                    if (g_GameManager.difficulty < 2)
+                    if (g_GameManager.difficulty < DIFF_HARD)
                     {
                         bullet->state2 = -1;
                     }

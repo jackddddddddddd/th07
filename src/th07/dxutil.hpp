@@ -28,13 +28,13 @@
             (p) = NULL;      \
         }                    \
     }
-#define SAFE_FREE(p)             \
-    {                            \
-        if (p)                   \
-        {                        \
+#define SAFE_FREE(p)     \
+    {                    \
+        if (p)           \
+        {                \
             ZUN_FREE(p); \
-            (p) = NULL;          \
-        }                        \
+            (p) = NULL;  \
+        }                \
     }
 #define SAFE_RELEASE(p)     \
     {                       \
