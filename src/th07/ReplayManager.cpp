@@ -162,11 +162,11 @@ ZunResult ReplayManager::AddedCallbackRecord(ReplayManager *arg)
     {
         arg->data = ZUN_NEW(ReplayFile, "ReplayDataInf");
         // STRING: TH07 0x00496aa8
-        arg->data->head.magic = *(u32 *)&"T7RP";
+        arg->data->head.magic = REPLAY_MAGIC;
         arg->data->data.shotType = g_GameManager.shotTypeAndCharacter;
-        arg->data->head.version = 0x1100;
-        arg->data->data.replayVersion = 256;
-        arg->data->data.versionChar1 = 'b';
+        arg->data->head.version = REPLAY_VERSION;
+        arg->data->data.majorVersion = REPLAY_VERSION_MAJOR;
+        arg->data->data.minorVersion = REPLAY_VERSION_MINOR;
         // STRING: TH07 0x00497228
         strcpy(arg->data->data.replayStr, "0100b");
         arg->data->data.exeSize = g_Supervisor.exeSize;
@@ -251,28 +251,28 @@ ReplayManager::ValidateReplayData(ReplayFile *data, i32 size)
         goto bad;
     }
 
-    if (curData->head.magic != *(u32 *)&"T7RP")
+    if (curData->head.magic != REPLAY_MAGIC)
     {
         goto bad;
     }
 
-    if (curData->head.version != 0x1100)
+    if (curData->head.version != REPLAY_VERSION)
     {
         goto bad;
     }
 
     curByte = (u8 *)&curData->head.replaySize;
     obfOffset = curData->head.key;
-    for (i = 0; i < size - 16; i++, curByte++)
+    for (i = 0; i < size - (i32)offsetof(ReplayHeader, replaySize); i++, curByte++)
     {
         *curByte -= obfOffset;
         obfOffset += 7;
     }
     csumPtr = &curData->head.key;
     csum = 0x3f000318;
-    for (i = 0; i < size - 13; i++, csumPtr++)
+    for (i = 0; i < size - (i32)offsetof(ReplayHeader, key); i++, csumPtr++)
     {
-        csum += (u32)*csumPtr;
+        csum += *csumPtr;
     }
     if (csum != curData->head.checksum)
     {
@@ -660,19 +660,19 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                 compressedSize = replayCopy.head.compressedSize;
                 csumPtr = &replayCopy.head.key;
                 csum = 0x3f000318;
-                for (i = 0; (u32)i < 0x47; i++, csumPtr++)
+                for (i = 0; i < sizeof(ReplayHeader) - offsetof(ReplayHeader, key); i++, csumPtr++)
                 {
-                    csum += (u32)*csumPtr;
+                    csum += *csumPtr;
                 }
                 csumPtr = lpBuffer;
                 for (i = 0; i < compressedSize; i++, csumPtr++)
                 {
-                    csum += (u32)*csumPtr;
+                    csum += *csumPtr;
                 }
                 replayCopy.head.checksum = csum;
                 curByte = (u8 *)&replayCopy.head.replaySize;
                 obfOffset = replayCopy.head.key;
-                for (i = 0; (u32)i < 0x44; i++, curByte++)
+                for (i = 0; i < sizeof(ReplayHeader) - offsetof(ReplayHeader, replaySize); i++, curByte++)
                 {
                     *curByte += obfOffset;
                     obfOffset += 7;
@@ -683,7 +683,7 @@ void ReplayManager::SaveReplay(const char *filename, char *replayName)
                     *curByte += obfOffset;
                     obfOffset += 7;
                 }
-                hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, 2, FILE_ATTRIBUTE_NORMAL, NULL);
+                hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (hFile == INVALID_HANDLE_VALUE)
                 {
                     // empty branch
@@ -810,19 +810,19 @@ void ReplayManager::SaveReplay2(const char *filename)
             compressedSize = replayCopy.head.compressedSize;
             csumPtr = &replayCopy.head.key;
             csum = 0x3f000318;
-            for (i = 0; (u32)i < 0x47; i++, csumPtr++)
+            for (i = 0; i < sizeof(ReplayHeader) - offsetof(ReplayHeader, key); i++, csumPtr++)
             {
-                csum += (u32)*csumPtr;
+                csum += *csumPtr;
             }
             csumPtr = lpBuffer;
             for (i = 0; i < compressedSize; i++, csumPtr++)
             {
-                csum += (u32)*csumPtr;
+                csum += *csumPtr;
             }
             replayCopy.head.checksum = csum;
             curByte = (u8 *)&replayCopy.head.replaySize;
             obfOffset = replayCopy.head.key;
-            for (i = 0; (u32)i < 0x44; i++, curByte++)
+            for (i = 0; i < sizeof(ReplayHeader) - offsetof(ReplayHeader, replaySize); i++, curByte++)
             {
                 *curByte += obfOffset;
                 obfOffset += 7;
@@ -833,7 +833,7 @@ void ReplayManager::SaveReplay2(const char *filename)
                 *curByte += obfOffset;
                 obfOffset += 7;
             }
-            hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, 2, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileA(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
             {
                 // empty branch

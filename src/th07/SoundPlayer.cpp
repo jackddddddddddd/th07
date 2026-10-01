@@ -438,7 +438,7 @@ ZunResult SoundPlayer::PreloadBGM(i32 idx, const char *path)
     SAFE_FREE(this->bgmPreloadData[idx]);
     // STRING: TH07 0x00495f38
     utils::DebugPrint("Streming BGM PreLoad %d\r\n", idx);
-    handle = CreateFileA(this->bgmArchivePath, GENERIC_READ, 1, NULL, 3,
+    handle = CreateFileA(this->bgmArchivePath, GENERIC_READ, FILE_SHARE_READ, NULL, 3,
                          FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
     if (handle == INVALID_HANDLE_VALUE)
     {

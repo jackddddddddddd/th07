@@ -71,7 +71,7 @@ bool Pbg4File::Open(const char *path, const char *mode)
     }
 
     GetFullPath(pathBuf, path);
-    this->handle = CreateFileA(pathBuf, this->access, 1, NULL, actionOnExistingFile,
+    this->handle = CreateFileA(pathBuf, this->access, FILE_SHARE_READ, NULL, actionOnExistingFile,
                                FILE_FLAG_SEQUENTIAL_SCAN | FILE_ATTRIBUTE_NORMAL, NULL);
     if (this->handle == INVALID_HANDLE_VALUE)
     {
